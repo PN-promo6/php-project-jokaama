@@ -1,15 +1,21 @@
 <?php
 
+require_once '../vendor/autoload.php';
+session_start();
+
 use Entity\Post;
 use ludk\Persistence\ORM;
 
-require __DIR__ . '/../vendor/autoload.php';
-
 $orm = new ORM(__DIR__ . '/../Resources');
-
 $postRepo = $orm->getRepository(Post::class);
 $items = $postRepo->findAll();
-// var_dump($items);
+$items = array();
+if (isset($_GET['search'])) {
+  // cherche dans le tableau json le contenu qui correspond à la recherche demandée
+  $items = $postRepo->findBy(array("content" => '%' . $_GET['search'] . '%'));
+} else {
+  $items = $postRepo->findAll();
+}
 ?>
 
 <!DOCTYPE html>
@@ -46,61 +52,40 @@ $items = $postRepo->findAll();
             <a class="nav-link" href="#">Home
               <span class="sr-only">(current)</span>
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-        </ul>
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <form class="nav-link" method="get" action="/">
+                  <input name="search" type="text" placeholder="Search"></input>
+                </form>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="?action=login" role="button">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="?action=register" role="button">Sign Up</a>
+              </li>
+            </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Page Content -->
-  <div class="row"></div>
-  <!--  Header -->
-  <header class="jumbotron my-4">
-    <h1 class="display-3">A Warm Welcome!</h1>
-    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa, ipsam, eligendi, in quo sunt
-      possimus non incidunt odit vero aliquid similique quaerat nam nobis illo aspernatur vitae fugiat numquam
-      repellat.</p>
-    <a href="#" class="btn btn-primary btn-lg">Call to action!</a>
-  </header>
-  </div>
-  <div class="container">
-    <!-- Page Features -->
-    <div class="row">
-      <?php foreach ($items as $item) { ?>
-        <div class="col-lg-4 col-md-6 mb-4">
-          <div class="card">
-            <img src="<?php echo $item->url_image; ?>" class="card-img-top">
-            <div class=" card-body">
-              <h5 class="card-title"><?php echo $item->title; ?></h5>
-              <p class="card-text"> <?php echo $item->description; ?>
-              </p>
-              <div class="row">
-                <div class="col-8">
-                  <a href='#' class="badge badge-info mb-2"><?php echo $item->category_sport; ?></a>
-                  <a href='#' class="badge badge-info mb-2"><?php echo $item->year_event; ?></a>
-                  <a href='#' class="badge badge-info mb-2"><?php echo $item->datepost; ?></a>
 
-                </div>
-
-              </div>
-
-              <a href="#" class="card-link">Voir l'article</a>
-            </div>
-          </div>
-        </div>
-      <?php } ?>
-
-    </div>
-    <!-- /.row -->
+  <?php
+  $action = $_GET["action"] ?? "display";
+  switch ($action) {
+    case 'register':
+      break;
+    case 'logout':
+      break;
+    case 'login':
+      break;
+    case 'new':
+      break;
+    case 'display':
+    default:
+      break;
+  } ?>
+  <!-- /.row -->
 
   </div>
   <!-- /.container -->
